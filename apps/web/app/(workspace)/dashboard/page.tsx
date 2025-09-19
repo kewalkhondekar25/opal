@@ -17,11 +17,11 @@ const page =  () => {
   }
 
   return (
-    <section className='relative min-h-screen flex justify-center items-center'>
+    <section className='relative min-h-screen w-screen flex justify-center items-center'>
       <div>{user?.emailAddresses[0].emailAddress}</div>
-      <Button 
+      {/* <Button 
         className='absolute top-0 right-0 cursor-pointer'
-        onClick={handleSignout}>Sign Out</Button>
+        onClick={handleSignout}>Sign Out</Button> */}
     </section>
   )
 }
