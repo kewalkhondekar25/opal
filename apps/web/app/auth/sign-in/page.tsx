@@ -42,7 +42,7 @@ const SignIn = () => {
             console.log(res);
             if(res?.status === "complete"){
                 await setActive!({ session: res.createdSessionId });
-                router.push("/dashboard")
+                router.push("/library")
             }
         } catch (error: any) {
             console.log(error);

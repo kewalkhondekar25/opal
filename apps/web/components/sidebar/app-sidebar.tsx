@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Sidebar,
     SidebarContent,
@@ -16,6 +18,7 @@ import Seperation from "./seperate-line";
 import Console from "./console";
 
 export function AppSidebar() {
+    
     return (
         <Sidebar>
             <SidebarHeader className="flex justify-center items-center">

@@ -38,7 +38,7 @@ const SignUp = () => {
             const res = await signUp?.create({ emailAddress: user.email, password: user.password });
             if(res?.status === "complete"){
                 await setActive!({ session: res?.createdSessionId })
-                router.push("/dashboard")
+                router.push("/library")
             }
         } catch (error: any) {
             console.log(error);

@@ -9,27 +9,27 @@ import {
 export const menuItems = [
   {
     id: 1,
-    name: "Home",
+    name: "home",
     icon: Home,
   },
   {
     id: 2,
-    name: "My Library",
+    name: "library",
     icon: Library,
   },
   {
     id: 3,
-    name: "Notifications",
+    name: "notifications",
     icon: Bell,
   },
   {
     id: 4,
-    name: "Billing",
+    name: "billing",
     icon: CreditCard,
   },
   {
     id: 5,
-    name: "Settings",
+    name: "settings",
     icon: Settings,
   },
 ];
