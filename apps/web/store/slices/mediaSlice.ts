@@ -3,11 +3,15 @@ import { createSlice } from "@reduxjs/toolkit";
 interface Imedia {
     isUpload: boolean;
     isRecord: boolean;
+    isRecording: boolean;
+    url: string;
 };
 
 const initialState: Imedia = {
     isUpload: false,
-    isRecord: false
+    isRecord: false,
+    isRecording: false,
+    url: ""
 };
 
 const mediaSlice = createSlice({
@@ -19,9 +23,20 @@ const mediaSlice = createSlice({
         },
         record: (state) => {
             state.isRecord = !state.isRecord;
+        },
+        recording: (state) => {
+            state.isRecording = !state.isRecording;
+        },
+        setUrl: (state, action) => {
+            state.url = action.payload;
         }
     }
 });
 
-export const { upload, record } = mediaSlice.actions;
+export const { 
+    upload, 
+    record, 
+    recording, 
+    setUrl 
+} = mediaSlice.actions;
 export default mediaSlice.reducer;
