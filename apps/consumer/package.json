@@ -1,0 +1,28 @@
+{
+  "name": "consumer",
+  "version": "1.0.0",
+  "description": "opal consumer",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsc -b && node dist/index.js"
+  },
+  "keywords": [
+    "nodejs",
+    "typescript",
+    "s3",
+    "sqs",
+    "ecr",
+    "ecs"
+  ],
+  "author": "Kewal Khondekar",
+  "license": "ISC",
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^24.5.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sqs": "^3.895.0",
+    "aws-lambda": "^1.0.7",
+    "dotenv": "^17.2.2"
+  }
+}
