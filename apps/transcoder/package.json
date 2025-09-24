@@ -1,0 +1,21 @@
+{
+  "name": "transcoder",
+  "version": "1.0.0",
+  "description": "video transcoder",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsc -b && node dist/index.js"
+  },
+  "keywords": [
+    "typescript",
+    "nodejs",
+    "ffmpeg",
+    "s3",
+    "postgres"
+  ],
+  "author": "Kewal Khondekar",
+  "license": "ISC",
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*"
+  }
+}
