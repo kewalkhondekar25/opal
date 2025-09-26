@@ -13,10 +13,10 @@ COPY ./pnpm-lock.yaml ./pnpm-lock.yaml
 COPY ./pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY ./turbo.json ./turbo.json
 
-COPY ./apps/transcode ./apps/transcoder
+COPY ./apps/transcoder ./apps/transcoder
 
 RUN npm i -g pnpm
 RUN pnpm install
-RUN pnpm run transcode:build
+RUN pnpm run transcoder:build
 
-CMD ["pnpm run transcode:start"]
+CMD ["pnpm", "run", "transcoder:start"]

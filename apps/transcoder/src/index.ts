@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
+import fsOld from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { S3Client, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
@@ -30,7 +31,7 @@ const main = async () => {
     
     const videoFile = await s3Client.send(s3Command);
     
-    const orignalFilePath = `video/orignal-video.webm`;
+    const orignalFilePath = `orignal-video.webm`;
     //@ts-ignore
     await fs.writeFile(orignalFilePath, videoFile.Body);
     //converts into absolute path
@@ -40,20 +41,21 @@ const main = async () => {
     console.log("start transcoding");
     const promises = resolutions.map(resolution => {
         
-        const output = `transcoded/video-${resolution.name}-${Date.now()}.mp4`;
+        const output = `video-${resolution.name}-${Date.now()}.mp4`;
         
         return new Promise<void>((resolve, _) => {
 
             ffmpeg(orignalVideoPath)
             .output(output)
             .withVideoCodec("libx264")
-            .audioCodec("acc")
+            .audioCodec("aac")
             .withSize(`${resolution.width}x${resolution.height}`)
             .on("end", async () => {
                 //upload transcoded videos
                 const s3PutCommand = new PutObjectCommand({
-                    Bucket: process.env.BUCKET,
-                    Key: output
+                    Bucket: process.env.FINAL_BUCKET,
+                    Key: output,
+                    Body: fsOld.createReadStream(path.resolve(output)) 
                 });
                 await s3Client.send(s3PutCommand);
                 console.log(`uploaded: ${output}`);
@@ -65,7 +67,15 @@ const main = async () => {
     });
 
     await Promise.all(promises);
-
+    console.log("Transcoded successfully");
 };
 
-main().finally(() => process.exit(0));
+main()
+  .then(() => {
+    console.log("Transcoded successfully");
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error("Transcoding failed:", err);
+    process.exit(1);
+});

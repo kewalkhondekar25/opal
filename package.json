@@ -9,8 +9,8 @@
     "check-types": "turbo run check-types",
     "consumer:build": "cd apps/consumer && tsc -b && cd ../../",
     "consumer:start": "cd apps/consumer && node dist/index.js",
-    "transcoder:build": "cd apps/transcode && tsc -b && cd ../../",
-    "transcoder:start": "cd apps/transcode && node dist/index.js"
+    "transcoder:build": "cd apps/transcoder && tsc -b && cd ../../",
+    "transcoder:start": "cd apps/transcoder && node dist/index.js"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
