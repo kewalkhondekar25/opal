@@ -7,6 +7,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
+    "db:generate": "cd packages/db && npx prisma generate && cd ../../",
     "consumer:build": "cd apps/consumer && tsc -b && cd ../../",
     "consumer:start": "cd apps/consumer && node dist/index.js",
     "transcoder:build": "cd apps/transcoder && tsc -b && cd ../../",

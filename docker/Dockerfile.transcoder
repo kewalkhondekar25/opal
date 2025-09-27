@@ -17,6 +17,7 @@ COPY ./apps/transcoder ./apps/transcoder
 
 RUN npm i -g pnpm
 RUN pnpm install
+RUN pnpm db:generate
 RUN pnpm run transcoder:build
 
 CMD ["pnpm", "run", "transcoder:start"]

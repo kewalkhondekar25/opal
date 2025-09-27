@@ -18,13 +18,13 @@ const page = () => {
         <MediaConsole />
       </div>
       {
-        isRecording && <CloudUpload
+        isRecording && <Video
           onClick={() => dispatch(record())}
           className='absolute bottom-3 right-3 size-5 animate-ping cursor-pointer' 
         />
       }
       {
-        isRecordingFinish && <Video
+        isRecordingFinish && <CloudUpload
           onClick={() => dispatch(record())}
           className='absolute bottom-3 right-3 size-5 animate-ping cursor-pointer' 
         />

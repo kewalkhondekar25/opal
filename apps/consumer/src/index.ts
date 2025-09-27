@@ -62,8 +62,9 @@ const main = async () => {
                     
                     const bucketFile = key;
                     const bucketFileName = bucketFile.replace(/\.[^/.]+$/, "");
-                    const bucketFileMetaData = bucketFileName.split("-").map(s => s.trim());
-                    const [ prefix, userId, trackId ] = bucketFileMetaData;
+                    const parts = bucketFileName.split("-").slice(1);
+                    const userId = parts.slice(0, 5).join("-");
+                    const trackId = parts.slice(5, 10).join("-");
 
                     //spin docker
                     const runTaskCommand = new RunTaskCommand({
@@ -88,7 +89,8 @@ const main = async () => {
                                     { name: "KEY", value: key },
                                     { name: "FINAL_BUCKET", value: process.env.FINAL_BUCKET },
                                     { name: "USER_ID", value: userId },
-                                    { name: "TRACK_ID", value: trackId }
+                                    { name: "TRACK_ID", value: trackId },
+                                    { name: "DATABASE_URL", value: process.env.DATABASE_URL }
                                 ]
                             }],
                         },

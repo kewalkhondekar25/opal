@@ -40,6 +40,7 @@ const MediaConsole = () => {
     const handleFinishRecording = () => {
         if(isRecording){
             stopRecording();
+            alert("Uploading in process. Please do not refresh browser");
         };
     };
 
