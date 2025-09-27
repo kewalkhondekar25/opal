@@ -4,6 +4,8 @@ interface Imedia {
     isUpload: boolean;
     isRecord: boolean;
     isRecording: boolean;
+    isRecordingInProcess: boolean;
+    isRecordingFinish: boolean;
     url: string;
 };
 
@@ -11,6 +13,8 @@ const initialState: Imedia = {
     isUpload: false,
     isRecord: false,
     isRecording: false,
+    isRecordingInProcess: false,
+    isRecordingFinish: false,
     url: ""
 };
 
@@ -27,6 +31,12 @@ const mediaSlice = createSlice({
         recording: (state) => {
             state.isRecording = !state.isRecording;
         },
+        recordingProcess: (state) => {
+            state.isRecordingInProcess = !state.isRecordingInProcess;
+        },
+        recordingFinish: (state) => {
+            state.isRecordingFinish = !state.isRecordingFinish;
+        },
         setUrl: (state, action) => {
             state.url = action.payload;
         }
@@ -36,7 +46,9 @@ const mediaSlice = createSlice({
 export const { 
     upload, 
     record, 
-    recording, 
+    recording,
+    recordingProcess,
+    recordingFinish,
     setUrl 
 } = mediaSlice.actions;
 export default mediaSlice.reducer;

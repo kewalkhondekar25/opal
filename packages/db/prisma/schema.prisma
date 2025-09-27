@@ -19,4 +19,44 @@ model User {
   password  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tracks Tracks[]
+  notifications Notifications[]
+  plan Plans?
+}
+
+model Tracks {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  videos Videos[]
+}
+
+model Videos {
+  id String @id @default(uuid())
+  trackId String
+  track Tracks @relation(fields: [trackId], references: [id])
+  url String
+}
+
+model Notifications {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  title String
+  subTitle String
+  isRead Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Plans {
+  id String @id @default(uuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id])
+  name Plan @default(FREE)
+}
+
+enum Plan {
+  FREE
+  PRO
 }

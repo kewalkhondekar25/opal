@@ -3,14 +3,26 @@
 import { useRef, useState } from "react";
 import useRedux from "./use-redux";
 import axios from "axios";
+import { createTrack } from "@/service/trackService";
 
 const useRecording = () => {
 
-    const { dispatch, record, recording, setUrl, isRecording } = useRedux();
+    const {
+        isRecordingFinish,
+        dispatch, 
+        record, 
+        recording, 
+        setUrl, 
+        isRecording, 
+        recordingProcess,
+        recordingFinish
+    } = useRedux();
 
     const [videoURL, setVideoURL] = useState<string | null>(null);
-    const fileName = `recording-${Date.now()}.webm`;
-    
+    //"recording-userId-trackId".webm
+    // const fileName = `recording-${Date.now()}.webm`;
+    let fileName: string;
+
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
     const uploadIdRef = useRef<string | null>(null)
@@ -18,13 +30,18 @@ const useRecording = () => {
     const partsRef = useRef<{ ETag: string, PartNumber: number }[]>([]);
     const uploadPromiseRef = useRef<Promise<void>[]>([]);
 
-    const startMultipartUploadSession = async () => {
+    const startMultipartUploadSession = async (userId: string, trackId: string) => {
+        //send trackid, userid to upload api
+        fileName = `recording-${userId}-${trackId}.webm`;
         try {
             const response = await axios.post("/api/start-upload", {
                 fileName,
                 contentType: "video/webm"
             });
             const uploadId = response.data.data.uploadId;
+            if(uploadId){
+                dispatch(recordingProcess());
+            };
             return uploadId;
         } catch (error) {
             console.log(error);
@@ -32,7 +49,11 @@ const useRecording = () => {
     };
 
     const startRecording = async () => {
-        const uploadId = await startMultipartUploadSession();
+
+        dispatch(recordingProcess());
+        const { userId, trackId } = await createTrack();
+
+        const uploadId = await startMultipartUploadSession(userId, trackId);
         uploadIdRef.current = uploadId;
 
         try {
@@ -94,8 +115,9 @@ const useRecording = () => {
             };
 
             mediaRecorder.onstop = async () => {
-                
+                dispatch(recordingFinish());
                 await Promise.all(uploadPromiseRef.current);
+                dispatch(recordingFinish());
 
                 if(uploadIdRef.current){
 
@@ -128,7 +150,7 @@ const useRecording = () => {
     const stopRecording = async () => {
         const blob = new Blob(chunksRef.current);
         if(blob.size < (5 * 1024 * 1024)){
-            return alert("Recording must reach 5 MB before it can be uploaded. Please continue.");
+            return alert("Recording must reach 5 MB before it can be uploaded. Please continue.");
         };
         if(mediaRecorderRef.current && isRecording){
             mediaRecorderRef.current.stop();

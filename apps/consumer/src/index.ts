@@ -59,6 +59,12 @@ const main = async () => {
                 for(const record of event.Records){
                     const { s3 } = record;
                     const { bucket, object: { key } } = s3;
+                    
+                    const bucketFile = key;
+                    const bucketFileName = bucketFile.replace(/\.[^/.]+$/, "");
+                    const bucketFileMetaData = bucketFileName.split("-").map(s => s.trim());
+                    const [ prefix, userId, trackId ] = bucketFileMetaData;
+
                     //spin docker
                     const runTaskCommand = new RunTaskCommand({
                         taskDefinition: process.env.ECS_TASK_DEFINATION,
@@ -75,11 +81,14 @@ const main = async () => {
                             containerOverrides: [{ 
                                 name: "opal-video-transcoder-container",
                                 environment: [
+                                    {name: "REGION", value: "ap-south-1"},
                                     { name: "ACCESS_KEY", value: process.env.ACCESS_KEY },
                                     { name: "SECRET_ACCESS_KEY", value: process.env.SECRET_ACCESS_KEY },
                                     { name: "BUCKET", value: bucket.name },
                                     { name: "KEY", value: key },
-                                    { name: "FINAL_BUCKET", value: process.env.FINAL_BUCKET }
+                                    { name: "FINAL_BUCKET", value: process.env.FINAL_BUCKET },
+                                    { name: "USER_ID", value: userId },
+                                    { name: "TRACK_ID", value: trackId }
                                 ]
                             }],
                         },

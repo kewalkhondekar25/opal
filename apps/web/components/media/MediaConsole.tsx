@@ -10,15 +10,26 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import useRedux from '@/hooks/use-redux';
-import { Circle, Pause } from 'lucide-react';
+import { Circle, Loader, Loader2, Pause } from 'lucide-react';
 import useFiveMinuteTimer from '@/hooks/useFiveMin';
 import MediaTooltip from './MediaTooltip';
 import useRecording from '@/hooks/use-recording';
 
 const MediaConsole = () => {
     
-    const { isRecord, dispatch, record, isRecording, recording, setUrl  } = useRedux();
+    const { 
+        isRecord,
+        isRecordingInProcess,
+        isRecordingFinish,
+        dispatch, 
+        record, 
+        isRecording, 
+        recording,
+        recordingProcess,
+        setUrl  
+    } = useRedux();
     const { startRecording, stopRecording, videoURL } = useRecording();
+    // const [isLoading, setIsLoading] = useState(true);
 
     const handleRecording = () => {
         if(isRecording) return;
@@ -51,19 +62,33 @@ const MediaConsole = () => {
                 <DialogContent className='rounded-full flex items-center p-3'>
                     <DialogHeader className='flex flex-row w-full justify-center'>
                         <DialogTitle></DialogTitle>
-                        <MediaTooltip type='record' title='Start Record'>
-                            <Circle 
-                                className="text-red-500 cursor-pointer" 
-                                fill="currentColor"
-                                onClick={handleRecording} 
-                                />
+                        <MediaTooltip 
+                            type='record' 
+                            title={isRecordingInProcess ? "Preparing recording..." : "Start Record"}
+                        >
+                            {
+                                isRecordingInProcess ? 
+                                    <Loader2 className="animate-spin text-red-500 w-6 h-6" /> :
+                                    <Circle 
+                                        className="text-red-500 cursor-pointer" 
+                                        fill="currentColor"
+                                        onClick={handleRecording} 
+                                    />
+                            }
                         </MediaTooltip>
                         <p>{formatTime(seconds)}</p>
-                        <MediaTooltip type='finish' title='Finish'>
-                            <Pause
-                                className='cursor-pointer'
-                                onClick={handleFinishRecording}
-                            />
+                        <MediaTooltip 
+                            type='finish'  
+                            title={isRecordingFinish ? "Uploading recording..." : "Finish"}
+                        >
+                            {
+                                isRecordingFinish ? 
+                                    <Loader className="animate-spin w-6 h-6"/> :
+                                    <Pause
+                                        className='cursor-pointer'
+                                        onClick={handleFinishRecording}
+                                    />
+                            }
                         </MediaTooltip>
                     </DialogHeader>
                 </DialogContent>
