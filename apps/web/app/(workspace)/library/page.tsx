@@ -3,11 +3,12 @@
 import Guide from '@/components/guide/Guide';
 import MediaConsole from '@/components/media/MediaConsole'
 import { Separator } from '@/components/ui/separator'
+import LoadingTrack from '@/components/video/LoadingTrack';
 import Tracks from '@/components/video/Tracks';
 import useRedux from '@/hooks/use-redux'
 import { fetchTracks } from '@/service/trackService';
 import { CloudUpload, Video } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 
 const page = () => {
 
@@ -16,17 +17,21 @@ const page = () => {
     isRecordingFinish, 
     record, 
     url, 
-    tracks, 
+    tracks,
+    isLoading,
     dispatch, 
-    setTracks 
+    setTracks,
+    setIsLoading 
   } = useRedux();
 
   useEffect(() => {
     const fetchAllTracks = async () => {
       try {
+        dispatch(setIsLoading());
         const allTracks = await fetchTracks();
         console.log(allTracks.data);
         dispatch(setTracks(allTracks.data));
+        dispatch(setIsLoading());
       } catch (error) {
         console.log(error);
       }
@@ -43,9 +48,8 @@ const page = () => {
       <div>
         <MediaConsole />
       </div>
-
       {
-        tracks?.length < 0 ? <Guide/> : <Tracks/>
+        tracks?.length < 0 ? <Guide/> : isLoading ? <LoadingTrack/> : <Tracks/>
       }
 
       {

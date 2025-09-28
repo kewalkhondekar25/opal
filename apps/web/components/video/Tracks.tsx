@@ -15,10 +15,12 @@ import Link from 'next/link';
 
 const Tracks = () => {
 
-    const { tracks }: { tracks: { id: string, userId: string }[]} = useRedux();
-    console.log("tracks cards", tracks);
+    const { tracks, isLoading  }: { 
+        tracks: { id: string, userId: string }[],
+        isLoading: boolean
+    } = useRedux();
 
-    // const tracks = [1, 2, 3, 4, 5, 6]
+    console.log("tracks cards", tracks);
 
     return (
         <section>
@@ -32,8 +34,8 @@ const Tracks = () => {
             </div>
             <div
                 className='flex flex-col gap-3 justify-center items-center mx-1
-            lg:grid lg:grid-cols-2 lg:gap-3 lg:place-items-center
-            xl:grid-cols-3'>
+                lg:grid lg:grid-cols-2 lg:gap-3 lg:place-items-center 
+                xl:grid-cols-3'>
                 {
                     tracks?.map((item, i) => {
                         return (

@@ -10,8 +10,16 @@ import {
 } from "@/store/slices/mediaSlice";
 
 import { 
-    setTracks
+    setTracks,
+    setVideos,
+    setIsLoading
 } from "@/store/slices/videoSlice";
+
+import { 
+    setNotification,
+    updateNotification,
+    setIsNotificationLoading
+} from "@/store/slices/notificationSlice";
 
 const useRedux = () => {
 
@@ -24,7 +32,9 @@ const useRedux = () => {
         url
     } = useSelector((state: RootState) => state.media);
 
-    const { tracks } = useSelector((state: RootState) => state.video);
+    const { isLoading, tracks, videos } = useSelector((state: RootState) => state.video);
+
+    const { notifications, isNotificationLoading } = useSelector((state: RootState) => state.notifications);
     
     const dispatch = useDispatch<AppDispatch>();
 
@@ -37,6 +47,11 @@ const useRedux = () => {
         url,
         //video
         tracks,
+        videos,
+        isLoading,
+        //notify
+        notifications,
+        isNotificationLoading,
         dispatch,
         //media
         upload,
@@ -47,7 +62,13 @@ const useRedux = () => {
         recordingFinish,
         setUrl,
         //video
-        setTracks
+        setTracks,
+        setVideos,
+        setIsLoading,
+        //notify
+        setNotification,
+        updateNotification,
+        setIsNotificationLoading
     };
 };
 
