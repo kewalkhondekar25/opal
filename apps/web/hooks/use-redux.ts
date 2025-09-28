@@ -9,6 +9,10 @@ import {
     setUrl 
 } from "@/store/slices/mediaSlice";
 
+import { 
+    setTracks
+} from "@/store/slices/videoSlice";
+
 const useRedux = () => {
 
     const { 
@@ -19,23 +23,31 @@ const useRedux = () => {
         isRecordingFinish,
         url
     } = useSelector((state: RootState) => state.media);
+
+    const { tracks } = useSelector((state: RootState) => state.video);
     
     const dispatch = useDispatch<AppDispatch>();
 
     return {
+        //media
         isRecord,
         isUpload,
         isRecordingInProcess,
         isRecordingFinish,
         url,
+        //video
+        tracks,
         dispatch,
+        //media
         upload,
         record,
         isRecording,
         recording,
         recordingProcess,
         recordingFinish,
-        setUrl
+        setUrl,
+        //video
+        setTracks
     };
 };
 

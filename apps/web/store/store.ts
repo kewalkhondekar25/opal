@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import mediaSliceReducer from "@/store/slices/mediaSlice"; 
+import mediaSliceReducer from "@/store/slices/mediaSlice";
+import videoSliceReducer from "@/store/slices/videoSlice";
 
 export const store = configureStore({
     reducer: {
-        media: mediaSliceReducer
+        media: mediaSliceReducer,
+        video: videoSliceReducer
     }
 });
 

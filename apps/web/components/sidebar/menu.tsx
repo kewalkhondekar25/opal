@@ -13,7 +13,7 @@ const Menu = () => {
             {
                 menuItems.map((item, i) => {
                     return (
-                        <Link href={item.name} key={i}>
+                        <Link href={`/${item.name}`} key={i}>
                             <div
                                 className={`flex items-center gap-3 mx-1 
                                 cursor-pointer hover:bg-[#242424]

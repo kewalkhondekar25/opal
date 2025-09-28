@@ -10,6 +10,17 @@ const createTrack = async () => {
     }
 };
 
+const fetchTracks = async () => {
+    try {
+        const response = await axios.get("/api/tracks");
+        console.log(response);
+        return response.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export {
-    createTrack
+    createTrack,
+    fetchTracks
 };
