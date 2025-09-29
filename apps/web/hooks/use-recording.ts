@@ -5,6 +5,7 @@ import useRedux from "./use-redux";
 import axios from "axios";
 import { createTrack } from "@/service/trackService";
 import useToast from "./use-toast";
+import { createNotifications } from "@/service/notifications";
 
 const useRecording = () => {
 
@@ -119,6 +120,7 @@ const useRecording = () => {
                 useToast("Uploading in progress");
                 dispatch(recordingFinish());
                 await Promise.all(uploadPromiseRef.current);
+                await createNotifications("Your video is queued", "Transcoding will start soon")
                 dispatch(recordingFinish());
 
                 if(uploadIdRef.current){
@@ -131,8 +133,9 @@ const useRecording = () => {
                         parts: orderedParts
                     });
                     console.log("complete upload res:", response);
-                    
-                    useToast("Added to Queue");
+                    if(response.status === 200){
+                        useToast("Added to Queue");
+                    }
                 };
 
                 const blob = new Blob(chunksRef.current, { type: "video/webm" });

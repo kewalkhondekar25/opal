@@ -15,25 +15,45 @@ const GET = async (req: NextRequest) => {
             ), { status: 404 });
         };
 
-        const tracks = await prisma.$transaction( async(tx) => {
+        const { searchParams } = new URL(req.url);
+        const page = parseInt(searchParams.get("page") || "1", 10);
+        const limit = parseInt(searchParams.get("limit") || "6", 10);
+
+        const skip = (page - 1) * limit;
+
+        const { tracks, total } = await prisma.$transaction( async(tx) => {
             
-            const user = await prisma.user.findUnique({
+            const user = await tx.user.findUnique({
                 where: { email },
                 select: { id: true }
             });
 
-            const tracks = await prisma.tracks.findMany({
+            const tracks = await tx.tracks.findMany({
+                skip,
+                take: limit,
                 where: { userId: user?.id },
+                include: { videos: true },
+                orderBy: { createdAt: "desc" }
             });
 
-            return tracks;
+            const total = await tx.tracks.count();
+
+            return { tracks, total };
         });
+
+        const totalPages = Math.ceil(total / limit);
 
         return NextResponse.json(new ApiResponse(
             true,
             200,
             "Tracks fetched successfully",
-            tracks
+            { 
+                page,
+                limit,
+                total,
+                totalPages,
+                tracks
+            }
         ), { status: 200 });
     } catch (error) {
         console.log("Error in fetching tracks", error);

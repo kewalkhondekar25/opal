@@ -19,7 +19,21 @@ const updateNotifications = async (notificationId: string) => {
     }
 };
 
+const createNotifications = async (title: string, subTitle: string) => {
+    try {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/create`, {
+            title,
+            subTitle
+        });
+        console.log(response);
+        return response.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export {
     fetchAllNotifications,
-    updateNotifications
+    updateNotifications,
+    createNotifications
 }

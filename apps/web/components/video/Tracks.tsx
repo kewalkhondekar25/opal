@@ -16,11 +16,10 @@ import Link from 'next/link';
 const Tracks = () => {
 
     const { tracks, isLoading  }: { 
-        tracks: { id: string, userId: string }[],
+        tracks: { id: string, userId: string, videos: [] }[],
         isLoading: boolean
     } = useRedux();
-
-    console.log("tracks cards", tracks);
+    // .filter(item => item.videos.length !== 0)
 
     return (
         <section>

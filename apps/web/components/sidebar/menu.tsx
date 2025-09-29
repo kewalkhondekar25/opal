@@ -10,7 +10,7 @@ const Menu = () => {
 
     const pathName = usePathname();
     const { notifications } = useRedux();
-    const notificationCount = notifications.filter(item => item.isRead === false );
+    const notificationCount = notifications?.filter(item => item.isRead === false );
 
     return (
         <div className='flex flex-col mx-5'>

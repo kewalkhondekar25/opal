@@ -39,7 +39,7 @@ const SignIn = () => {
                 identifier: user.email,
                 password: user.password
             });
-            console.log(res);
+            // console.log(res);
             if(res?.status === "complete"){
                 await setActive!({ session: res.createdSessionId });
                 router.push("/library")

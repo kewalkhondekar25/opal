@@ -4,7 +4,7 @@ import Loading from '@/components/notification/Loading';
 import { Separator } from '@/components/ui/separator'
 import useRedux from '@/hooks/use-redux';
 import convertTime from '@/lib/time';
-import { updateNotifications } from '@/service/notifications';
+import { fetchAllNotifications, updateNotifications } from '@/service/notifications';
 import { Bell, BellRing } from 'lucide-react'
 import React, { useEffect } from 'react'
 
@@ -12,28 +12,32 @@ const page = () => {
     const {
         isNotificationLoading,
         notifications,
+        dispatch,
+        setNotification
     } = useRedux();
 
     const unReadNotifications = notifications
         .filter(item => item.isRead === false)
         .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
-    
+
 
     useEffect(() => {
-        const markReadNotification = async (unReadNotifications: { id: string}[]) => {
+        const markReadNotification = async (unReadNotifications: { id: string }[]) => {
             try {
-                for( const unreadNotification of unReadNotifications){
+                for (const unreadNotification of unReadNotifications) {
                     await updateNotifications(unreadNotification?.id);
                 }
+                const notifications = await fetchAllNotifications();
+                dispatch(setNotification(notifications));
             } catch (error) {
                 console.log(error);
             }
         };
-        if(unReadNotifications.length >= 1){
-            markReadNotification(unReadNotifications)
+        if (unReadNotifications.length >= 1) {
+            markReadNotification(unReadNotifications);
         }
     }, [unReadNotifications]);
-    
+
 
     if (isNotificationLoading) {
         return <Loading />

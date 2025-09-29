@@ -10,9 +10,9 @@ const createTrack = async () => {
     }
 };
 
-const fetchTracks = async () => {
+const fetchTracks = async (page: number, limit: number) => {
     try {
-        const response = await axios.get("/api/tracks");
+        const response = await axios.get(`/api/tracks?page=${page}&limit=${limit}`);
         console.log(response);
         return response.data;
     } catch (error) {

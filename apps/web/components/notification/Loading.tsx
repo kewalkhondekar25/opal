@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 
 const Loading = () => {
     
-    const notifications = Array.from({ length: 5 }, (_, i) => i + 1)
+    const notifications = Array.from({ length: 10 }, (_, i) => i + 1)
     
     return (
         <section

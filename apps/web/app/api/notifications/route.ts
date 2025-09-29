@@ -15,19 +15,14 @@ const GET = async (req: NextRequest) => {
             ), { status: 400 });
         };
 
-        const notifications = await prisma.$transaction(async (tx) => {
+        const userId = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true }
+        });
 
-            const user = await prisma.user.findUnique({
-                where: { email },
-                select: { id: true }
-            });
-
-            const notifications = await prisma.notifications.findMany({
-                where: { userId: user?.id },
-                orderBy: { createdAt: "desc" }
-            });
-            
-            return notifications;
+        const notifications = await prisma.notifications.findMany({
+            where: { userId: userId?.id },
+            orderBy: { createdAt: "desc" }
         });
 
         return NextResponse.json(new ApiResponse(
@@ -96,6 +91,6 @@ const POST = async (req: NextRequest) => {
 };
 
 export {
-     GET,
-     POST
+    GET,
+    POST
 };
