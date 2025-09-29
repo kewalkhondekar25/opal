@@ -20,16 +20,17 @@ const page = () => {
     
 
     useEffect(() => {
-        const markReadNotification = async (notificationId: string) => {
+        const markReadNotification = async (unReadNotifications: { id: string}[]) => {
             try {
-                console.log("will read");
-                const response = await updateNotifications(notificationId);
+                for( const unreadNotification of unReadNotifications){
+                    await updateNotifications(unreadNotification?.id);
+                }
             } catch (error) {
                 console.log(error);
             }
         };
         if(unReadNotifications.length >= 1){
-            markReadNotification(unReadNotifications?.[0]?.id)
+            markReadNotification(unReadNotifications)
         }
     }, [unReadNotifications]);
     
