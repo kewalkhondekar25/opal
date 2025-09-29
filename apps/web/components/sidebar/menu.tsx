@@ -27,7 +27,7 @@ const Menu = () => {
                                 <span>{<item.icon />}</span>
                                 <span className='capitalize'>{item.name}</span>
                                 {
-                                    item.name === "notifications" && notifications?.length >= 1 &&
+                                    item.name === "notifications" && notificationCount?.length >= 1 &&
                                     <span
                                         className='dark:bg-white dark:text-black 
                                         h-5 w-5 rounded-full flex justify-center items-center p-2'

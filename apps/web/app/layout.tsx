@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/common/theme-provider";
 import { ClerkProvider } from '@clerk/nextjs'
 import { ReduxProvider } from "@/store/slices/provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default async function RootLayout({
           >
             <ReduxProvider>
               {children}
+              <Toaster/>
             </ReduxProvider>
           </ThemeProvider>
         </body>

@@ -4,7 +4,7 @@ import React from 'react';
 import { Button } from '../ui/button';
 import { LogOut, Upload, Video } from 'lucide-react';
 import { useClerk } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
 	Tooltip,
 	TooltipContent,
@@ -12,23 +12,26 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import useRedux from '@/hooks/use-redux';
+import useToast from '@/hooks/use-toast';
 
 interface IHeaderButton {
 	icon: React.ReactNode,
 	label: string,
 	className?: string,
 	toolTip?: string,
-	onClick?: () => void
+	onClick?: () => void,
+	disabled: boolean
 };
 
-const HeaderButton = ({ icon, label, className, toolTip, onClick }: IHeaderButton) => {
+const HeaderButton = ({ icon, label, className, toolTip, onClick, disabled }: IHeaderButton) => {
 	return (
 		<TooltipProvider delayDuration={0}>
 			<Tooltip>
 				<TooltipTrigger asChild>
 					<Button
-						className={`rounded-full cursor-pointer ${label === "Logout" ? "" : "md:rounded-md"} ${className || ""}`}
+						className={`rounded-full  ${label === "Upload" ? "cursor-not-allowed" : "cursor-pointer"} ${label === "Logout" ? "" : "md:rounded-md"} ${className || ""}`}
 						onClick={onClick}
+						disabled={disabled}
 					>
 						{icon}
 						<span className={`hidden ${label === "Logout" ? "" : "md:block"}`}>
@@ -49,6 +52,7 @@ const Header = () => {
 	const router = useRouter();
 	const clerk = useClerk();
 	const { dispatch, upload, record } = useRedux();
+	const path = usePathname();
 
 	const handleLogout = async () => {
 		await clerk.signOut();
@@ -56,10 +60,14 @@ const Header = () => {
 	};
 
 	const handleUploadClick = () => {
+		useToast("Please upgrade to PRO plan")
 		dispatch(upload());
 	};
 
 	const handleRecordClick = () => {
+		if(!path.startsWith("/library")){
+			router.push("/library")
+		}
 		dispatch(record());
 	};
 
@@ -69,19 +77,22 @@ const Header = () => {
 				icon={<Upload />}
 				label="Upload"
 				toolTip='Upload a Video' 
-				onClick={handleUploadClick} 
+				onClick={handleUploadClick}
+				disabled={false}
 			/>
 			<HeaderButton 
 				icon={<Video />} 
 				label="Record" 
 				toolTip='Record a Video'
-				onClick={handleRecordClick} 
+				onClick={handleRecordClick}
+				disabled={false} 
 			/>
 			<HeaderButton 
 				icon={<LogOut />} 
 				label="Logout" 
 				toolTip='Logout' 
-				onClick={handleLogout} 
+				onClick={handleLogout}
+				disabled={false} 
 			/>
 		</div>
 	);

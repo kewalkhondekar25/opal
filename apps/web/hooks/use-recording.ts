@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import useRedux from "./use-redux";
 import axios from "axios";
 import { createTrack } from "@/service/trackService";
+import useToast from "./use-toast";
 
 const useRecording = () => {
 
@@ -115,6 +116,7 @@ const useRecording = () => {
             };
 
             mediaRecorder.onstop = async () => {
+                useToast("Uploading in progress");
                 dispatch(recordingFinish());
                 await Promise.all(uploadPromiseRef.current);
                 dispatch(recordingFinish());
@@ -128,6 +130,9 @@ const useRecording = () => {
                         uploadId: uploadIdRef.current,
                         parts: orderedParts
                     });
+                    console.log("complete upload res:", response);
+                    
+                    useToast("Added to Queue");
                 };
 
                 const blob = new Blob(chunksRef.current, { type: "video/webm" });

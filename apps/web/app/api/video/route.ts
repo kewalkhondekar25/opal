@@ -22,8 +22,6 @@ const GET = async (req: NextRequest) => {
         const videos = await prisma.videos.findMany({
             where: { trackId }
         });
-        console.log(videos);
-        
 
         if (videos.length === 0) {
             return NextResponse.json(new ApiResponse(
@@ -33,11 +31,10 @@ const GET = async (req: NextRequest) => {
                 { length: 0 }
             ));
         };
-        console.log(1);
+
         const videoPromise = videos.map(async (item, i) => {
-            console.log(2);
             const command = new GetObjectCommand({
-                Bucket: process.env.BUCKET!,
+                Bucket: process.env.FINAL_BUCKET!,
                 Key: item.url
             });
             return await getSignedUrl(s3, command);
@@ -45,14 +42,12 @@ const GET = async (req: NextRequest) => {
 
         const videoUrls = await Promise.all(videoPromise);
 
-        console.log(JSON.stringify(videoUrls, null, 2));
-
         return NextResponse.json(new ApiResponse(
             true,
             200,
             "Videos fetched successfully",
             videoUrls
-        ));
+        ), { status: 200 });
 
     } catch (error) {
         console.log(error);
@@ -60,7 +55,7 @@ const GET = async (req: NextRequest) => {
             false,
             500,
             "Error in fetching videos"
-        ));
+        ), { status: 500 });
     }
 };
 

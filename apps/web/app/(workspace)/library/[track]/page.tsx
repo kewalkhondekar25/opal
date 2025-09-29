@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Console from '@/components/sidebar/console';
 import useRedux from '@/hooks/use-redux';
 import { getAllVideos } from '@/service/videoService';
@@ -16,22 +16,24 @@ import Transcript from '@/components/video/Transcript';
 
 const page = () => {
 
+    const [url, setUrl] = useState([]);
     const { track: trackId } = useParams() as { track: string }
-
     const { dispatch, setVideos, videos } = useRedux();
+
     const video = [1, 2, 3, 4];
+    const videoToLoad = url?.[url.length -1]
 
     useEffect(() => {
         const fetchVideos = async (trackId: string) => {
             try {
                 const videos = await getAllVideos(trackId);
-                console.log(videos);
+                setUrl(videos);
                 dispatch(setVideos(videos));
             } catch (error) {
                 console.log(error);
             }
         };
-        // fetchVideos(trackId);
+        fetchVideos(trackId);
     }, []);
 
     return (
@@ -39,7 +41,7 @@ const page = () => {
             <video
                 className='md:mt-5 lg:mt-20'
                 controls
-                src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"></video>
+                src={videoToLoad}></video>
             <p className='text-xl font-semibold self-start'>Unleashing the power of Speech to Recognition</p>
             <div className='self-start'>
                 <p className='text-md'>Download Transcoded Videos</p>
@@ -50,6 +52,7 @@ const page = () => {
                                 <Tooltip key={i}>
                                     <TooltipTrigger className='cursor-pointer'>
                                         <div
+                                            onClick={() => window.location.href=`${url[i]}`}
                                             className='dark:bg-[#171717] p-2 m-1 dark:border dark:border-white rounded-lg'>
                                             <Film />
                                         </div>

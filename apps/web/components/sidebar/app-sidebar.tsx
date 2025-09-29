@@ -41,9 +41,9 @@ export function AppSidebar() {
     useEffect(() => {
         fetchNotifications();
         //long-pooling
-        // setInterval(() => {
-        //     fetchNotifications();
-        // }, 30000);
+        setInterval(() => {
+            fetchNotifications();
+        }, 30000);
     }, []);
 
     return (

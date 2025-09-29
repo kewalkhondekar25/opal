@@ -3,8 +3,10 @@
 import Loading from '@/components/notification/Loading';
 import { Separator } from '@/components/ui/separator'
 import useRedux from '@/hooks/use-redux';
+import convertTime from '@/lib/time';
+import { updateNotifications } from '@/service/notifications';
 import { Bell, BellRing } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const page = () => {
     const {
@@ -12,11 +14,29 @@ const page = () => {
         notifications,
     } = useRedux();
 
+    const unReadNotifications = notifications
+        .filter(item => item.isRead === false)
+        .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+    
+
+    useEffect(() => {
+        const markReadNotification = async (notificationId: string) => {
+            try {
+                console.log("will read");
+                const response = await updateNotifications(notificationId);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        if(unReadNotifications.length >= 1){
+            markReadNotification(unReadNotifications?.[0]?.id)
+        }
+    }, [unReadNotifications]);
+    
+
     if (isNotificationLoading) {
         return <Loading />
     } else {
-
-
         return (
             <section
                 className='flex flex-col w-screen mx-2'>
@@ -39,7 +59,11 @@ const page = () => {
                                         <div className={`${!item.isRead && "font-bold"} flex flex-col w-full`}>
                                             <div className="flex justify-between">
                                                 <p className="text-sm">{item.title}</p>
-                                                <p className='text-xs'>12:00</p>
+                                                <p className='text-xs'>
+                                                    {
+                                                        convertTime(item.createdAt)
+                                                    }
+                                                </p>
                                             </div>
                                             <p className='text-xs'>{item.subTitle}</p>
                                         </div>
