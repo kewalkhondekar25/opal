@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Loader } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import useToast from '@/hooks/use-toast';
 
-const LoadingVideos = () => {
+const LoadingVideos = ({ length }: { length: number}) => {
 
     const video = [1, 2, 3, 4];
 

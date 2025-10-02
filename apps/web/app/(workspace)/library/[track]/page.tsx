@@ -19,18 +19,20 @@ import LoadingVideos from '@/components/video/LoadingVideos';
 const page = () => {
 
     const [url, setUrl] = useState([]);
+    const [transcript, setTranscript] = useState("");
     const { track: trackId } = useParams() as { track: string }
     const { dispatch, setVideos, videos } = useRedux();
 
     const video = [1, 2, 3, 4];
-    const videoToLoad = url?.[url.length - 1]
+    const videoToLoad = url?.[url.length - 1];
 
     useEffect(() => {
         const fetchVideos = async (trackId: string) => {
             try {
                 const videos = await getAllVideos(trackId);
-                setUrl(videos);
+                setUrl(videos.videoUrls);
                 dispatch(setVideos(videos));
+                setTranscript(videos.transcript)
             } catch (error) {
                 console.log(error);
             }
@@ -39,7 +41,7 @@ const page = () => {
     }, []);
 
     if (url.length === 0) {
-        return <LoadingVideos />
+        return <LoadingVideos length={url.length} />
     } else {
         return (
             <section className='flex flex-col justify-center items-center gap-3 mx-2'>
@@ -84,7 +86,7 @@ const page = () => {
                     <Console />
                 </div>
                 <Separator className='my-3' />
-                <Transcript />
+                <Transcript transcript={transcript} />
             </section>
         )
     }

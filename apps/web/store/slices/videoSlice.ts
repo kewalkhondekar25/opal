@@ -1,12 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface IVideo {
+    title: string;
     isLoading: boolean;
     tracks: [];
     videos: string[]
 };
 
 const initialState: IVideo = {
+    title: "",
     isLoading: false,
     tracks: [],
     videos: []
@@ -24,6 +26,9 @@ const videoSlice =  createSlice({
         },
         setIsLoading: (state) => {
             state.isLoading = !state.isLoading
+        },
+        setTitle: (state, action) => {
+            state.title = action.payload
         }
     }
 });
@@ -31,6 +36,7 @@ const videoSlice =  createSlice({
 export const {
     setTracks,
     setVideos,
-    setIsLoading
+    setIsLoading,
+    setTitle
 } = videoSlice.actions;
 export default videoSlice.reducer;

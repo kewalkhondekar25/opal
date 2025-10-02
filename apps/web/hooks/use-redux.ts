@@ -1,3 +1,5 @@
+"use client";
+
 import { AppDispatch, RootState, store } from "@/store/store";
 import { useSelector, useDispatch } from "react-redux";
 import { 
@@ -12,7 +14,8 @@ import {
 import { 
     setTracks,
     setVideos,
-    setIsLoading
+    setIsLoading,
+    setTitle
 } from "@/store/slices/videoSlice";
 
 import { 
@@ -32,7 +35,7 @@ const useRedux = () => {
         url
     } = useSelector((state: RootState) => state.media);
 
-    const { isLoading, tracks, videos } = useSelector((state: RootState) => state.video);
+    const { isLoading, tracks, videos, title } = useSelector((state: RootState) => state.video);
 
     const { notifications, isNotificationLoading } = useSelector((state: RootState) => state.notifications);
     
@@ -49,6 +52,7 @@ const useRedux = () => {
         tracks,
         videos,
         isLoading,
+        title,
         //notify
         notifications,
         isNotificationLoading,
@@ -65,6 +69,7 @@ const useRedux = () => {
         setTracks,
         setVideos,
         setIsLoading,
+        setTitle,
         //notify
         setNotification,
         updateNotification,

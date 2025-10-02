@@ -21,25 +21,33 @@ const GET = async (req: NextRequest) => {
 
         const skip = (page - 1) * limit;
 
-        const { tracks, total } = await prisma.$transaction( async(tx) => {
+        // const { tracks, total } = await prisma.$transaction( async(tx) => {
             
-            const user = await tx.user.findUnique({
+            const userId = await prisma.user.findUnique({
                 where: { email },
                 select: { id: true }
             });
+            if(!userId){
+            return NextResponse.json(new ApiResponse(
+                false,
+                404,
+                "Invalid user"
+            ), { status: 404 });
+        };
 
-            const tracks = await tx.tracks.findMany({
+
+            const tracks = await prisma.tracks.findMany({
                 skip,
                 take: limit,
-                where: { userId: user?.id },
+                where: { userId: userId?.id },
                 include: { videos: true },
                 orderBy: { createdAt: "desc" }
             });
 
-            const total = await tx.tracks.count();
+            const total = await prisma.tracks.count();
 
-            return { tracks, total };
-        });
+            // return { tracks, total };
+        // });
 
         const totalPages = Math.ceil(total / limit);
 

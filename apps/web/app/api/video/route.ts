@@ -19,11 +19,19 @@ const GET = async (req: NextRequest) => {
             ));
         };
 
-        const videos = await prisma.videos.findMany({
-            where: { trackId }
+        const trackData = await prisma.tracks.findUnique({
+            where: { id: trackId },
+            select: {
+                createdAt: true,
+                transcript: true,
+                videos: true
+            }
         });
 
-        if (videos.length === 0) {
+        const timeStamp = trackData?.createdAt;
+        const transcript = trackData?.transcript;
+
+        if (trackData?.videos?.length === 0) {
             return NextResponse.json(new ApiResponse(
                 true,
                 200,
@@ -32,7 +40,7 @@ const GET = async (req: NextRequest) => {
             ));
         };
 
-        const videoPromise = videos.map(async (item, i) => {
+        const videoPromise = trackData?.videos?.map(async (item, i) => {
             const command = new GetObjectCommand({
                 Bucket: process.env.FINAL_BUCKET!,
                 Key: item.url
@@ -40,13 +48,17 @@ const GET = async (req: NextRequest) => {
             return await getSignedUrl(s3, command);
         });
 
-        const videoUrls = await Promise.all(videoPromise);
+        const videoUrls = await Promise.all(videoPromise!);
 
         return NextResponse.json(new ApiResponse(
             true,
             200,
             "Videos fetched successfully",
-            videoUrls
+            {
+                timeStamp,
+                transcript,
+                videoUrls
+            }
         ), { status: 200 });
 
     } catch (error) {

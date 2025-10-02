@@ -33,7 +33,6 @@ const page = () => {
       try {
         dispatch(setIsLoading());
         const allTracks = await fetchTracks(page, limit);
-        console.log(allTracks.data.tracks);
         dispatch(setTracks(allTracks.data.tracks));
         dispatch(setIsLoading());
         setPage(allTracks?.data?.page);
@@ -86,7 +85,7 @@ const page = () => {
             <span> of</span> {totalPages}
           </div>
           <Button
-            disabled={page <= totalPages}
+            disabled={page >= totalPages}
             onClick={() => setPage(prev => prev + 1)}>
             <ChevronRight />
           </Button>

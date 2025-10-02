@@ -1,4 +1,6 @@
-import React from 'react'
+"use client";
+
+import React, { useEffect } from 'react'
 import { Skeleton } from "@/components/ui/skeleton"
 import { Video } from 'lucide-react';
 
