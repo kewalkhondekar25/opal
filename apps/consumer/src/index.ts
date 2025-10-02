@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand } from "@aws-sdk/client-sqs";
 import type { S3Event } from "aws-lambda";
-import { ECSClient, RunTaskCommand } from "@aws-sdk/client-ecs";
+import { ECSClient, RunTaskCommand, ListTasksCommand } from "@aws-sdk/client-ecs";
 
 const client = new SQSClient({
     region: process.env.REGION,
@@ -20,35 +20,42 @@ const ecsClient = new ECSClient({
     }
 });
 
-const main = async () => {
-    
-    const command = new ReceiveMessageCommand({
-        QueueUrl: process.env.QUEUE_URL,
-        MaxNumberOfMessages: 1,
-        WaitTimeSeconds: 10
-    });
+const command = new ReceiveMessageCommand({
+    QueueUrl: process.env.QUEUE_URL,
+    MaxNumberOfMessages: 1,
+    WaitTimeSeconds: 10
+});
 
-    while(true){
+const spinCommand = new ListTasksCommand({
+    cluster: process.env.ECS_CLUSTER,
+    desiredStatus: "RUNNING",
+    family: process.env.ECS_TASK_DEFINATION?.split("/").pop()?.split(":")[0]
+});
+
+const main = async () => {
+
+
+    while (true) {
 
         try {
             const { Messages } = await client.send(command);
-            
-            if(!Messages){
+
+            if (!Messages) {
                 console.log("No messages yet");
                 continue;
             };
 
-            for(const message of Messages){
+            for (const message of Messages) {
                 const { Body, MessageId } = message;
-                
+
                 console.log("message received", { Body, MessageId });
-    
+
                 //validate
-                if(!Body) continue;
+                if (!Body) continue;
                 const event = JSON.parse(Body) as S3Event;
 
-                if("Service" in event && "Event" in event){
-                    if(event.Event === "s3:TestEvent"){
+                if ("Service" in event && "Event" in event) {
+                    if (event.Event === "s3:TestEvent") {
                         await client.send(new DeleteMessageCommand({
                             QueueUrl: process.env.QUEUE_URL,
                             ReceiptHandle: message.ReceiptHandle
@@ -56,10 +63,18 @@ const main = async () => {
                         continue;
                     }
                 }
-                for(const record of event.Records){
+
+                for (const record of event.Records) {
+
+                    const spinningContainers = await ecsClient.send(spinCommand);
+                    if (spinningContainers.taskArns && spinningContainers.taskArns.length >= 1) {
+                        console.log("Max ECS tasks running. Leaving message in SQS for later.");
+                        continue;
+                    }
+
                     const { s3 } = record;
                     const { bucket, object: { key } } = s3;
-                    
+
                     const bucketFile = key;
                     const bucketFileName = bucketFile.replace(/\.[^/.]+$/, "");
                     const parts = bucketFileName.split("-").slice(1);
@@ -69,7 +84,7 @@ const main = async () => {
                     //spin docker
                     const runTaskCommand = new RunTaskCommand({
                         taskDefinition: process.env.ECS_TASK_DEFINATION,
-                        cluster:process.env.ECS_CLUSTER,
+                        cluster: process.env.ECS_CLUSTER,
                         launchType: "FARGATE",
                         networkConfiguration: {
                             awsvpcConfiguration: {
@@ -79,10 +94,10 @@ const main = async () => {
                             }
                         },
                         overrides: {
-                            containerOverrides: [{ 
+                            containerOverrides: [{
                                 name: "opal-video-transcoder-container",
                                 environment: [
-                                    {name: "REGION", value: "ap-south-1"},
+                                    { name: "REGION", value: "ap-south-1" },
                                     { name: "ACCESS_KEY", value: process.env.ACCESS_KEY },
                                     { name: "SECRET_ACCESS_KEY", value: process.env.SECRET_ACCESS_KEY },
                                     { name: "BUCKET", value: bucket.name },
@@ -90,7 +105,8 @@ const main = async () => {
                                     { name: "FINAL_BUCKET", value: process.env.FINAL_BUCKET },
                                     { name: "USER_ID", value: userId },
                                     { name: "TRACK_ID", value: trackId },
-                                    { name: "DATABASE_URL", value: process.env.DATABASE_URL }
+                                    { name: "DATABASE_URL", value: process.env.DATABASE_URL },
+                                    { name: "OPENAI_API_KEY", value: process.env.OPENAI_API_KEY }
                                 ]
                             }],
                         },
