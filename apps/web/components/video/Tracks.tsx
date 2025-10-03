@@ -43,7 +43,7 @@ const Tracks = () => {
             const allTracks = tracks.map(async (item) => {
                 const trackresponse = await getAllVideos(item.id);
                 return {
-                    videoUrls: trackresponse.videoUrls
+                    videoUrls: trackresponse?.videoUrls
                 }
             });
             const finalTracks = await Promise.all(allTracks);

@@ -9,8 +9,19 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Button } from '../ui/button';
+import { checkout } from '@/service/payment';
 
 const Upgrade = () => {
+
+    const handleUpgrade = async () => {
+        try {
+            const response = await checkout();
+            window.location.href = response?.url;        
+        } catch (error) {
+            console.log(error);
+            
+        }
+    };
     return (
         <div className='flex justify-center items-center mx-5'>
             <Card className='w-full'>
@@ -21,7 +32,9 @@ const Upgrade = () => {
                 <CardContent>
                 </CardContent>
                 <CardFooter>
-                    <Button className='w-full'>Upgrade</Button>
+                    <Button 
+                        className='w-full'
+                        onClick={handleUpgrade}>Upgrade</Button>
                 </CardFooter>
             </Card>
         </div>

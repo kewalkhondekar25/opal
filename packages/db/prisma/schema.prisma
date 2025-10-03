@@ -14,51 +14,65 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  tracks Tracks[]
-  notifications Notifications[]
-  plan Plans?
+  id               String          @id @default(uuid())
+  email            String          @unique
+  password         String?
+  stripeCustomerId String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  tracks           Tracks[]
+  notifications    Notifications[]
+  plan             Plans?
+  subscription     Subscription?
 }
 
 model Tracks {
-  id String @id @default(uuid())
-  userId String
-  user User @relation(fields: [userId], references: [id])
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
   transcript String?
-  title String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime? @updatedAt
+  title      String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime? @updatedAt
 
   videos Videos[]
 }
 
 model Videos {
-  id String @id @default(uuid())
+  id      String @id @default(uuid())
   trackId String
-  track Tracks @relation(fields: [trackId], references: [id])
-  url String
+  track   Tracks @relation(fields: [trackId], references: [id])
+  url     String
 }
 
 model Notifications {
-  id String @id @default(uuid())
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  title String
-  subTitle String
-  isRead Boolean @default(false)
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  subTitle  String
+  isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Plans {
-  id String @id @default(uuid())
+  id     String @id @default(uuid())
   userId String @unique
-  user User @relation(fields: [userId], references: [id])
-  name Plan @default(FREE)
+  user   User   @relation(fields: [userId], references: [id])
+  name   Plan   @default(FREE)
+}
+
+model Subscription {
+  id                   String    @id @default(uuid())
+  userId               String    @unique
+  user                 User      @relation(fields: [userId], references: [id])
+  stripeSubscriptionId String    @unique
+  status               String
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }
 
 enum Plan {
