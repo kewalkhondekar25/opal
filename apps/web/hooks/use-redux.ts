@@ -24,6 +24,11 @@ import {
     setIsNotificationLoading
 } from "@/store/slices/notificationSlice";
 
+import { 
+    setIsActive,
+    setSubscriptionStatus
+} from "@/store/slices/subscribeSlice";
+
 const useRedux = () => {
 
     const { 
@@ -38,6 +43,8 @@ const useRedux = () => {
     const { isLoading, tracks, videos, title } = useSelector((state: RootState) => state.video);
 
     const { notifications, isNotificationLoading } = useSelector((state: RootState) => state.notifications);
+
+    const { isActive, subscriptionStatus } = useSelector((state: RootState) => state.subscribe);
     
     const dispatch = useDispatch<AppDispatch>();
 
@@ -56,6 +63,9 @@ const useRedux = () => {
         //notify
         notifications,
         isNotificationLoading,
+        //subscribe
+        isActive,
+        subscriptionStatus,
         dispatch,
         //media
         upload,
@@ -73,7 +83,10 @@ const useRedux = () => {
         //notify
         setNotification,
         updateNotification,
-        setIsNotificationLoading
+        setIsNotificationLoading,
+        //subscribe
+        setIsActive,
+        setSubscriptionStatus
     };
 };
 

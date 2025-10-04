@@ -18,13 +18,17 @@ import Seperation from "./seperate-line";
 import Console from "./console";
 import { fetchAllNotifications } from "@/service/notifications";
 import useRedux from "@/hooks/use-redux";
+import { fetchSubscription } from "@/service/subscription";
 
 export function AppSidebar() {
 
     const {
         dispatch,
         setNotification,
-        setIsNotificationLoading
+        setIsNotificationLoading,
+        isActive,
+        setIsActive,
+        setSubscriptionStatus
     } = useRedux();
 
     const fetchNotifications = async () => {
@@ -38,8 +42,19 @@ export function AppSidebar() {
         }
     };
 
+    const getSubscription = async () => {
+        try {
+            const response = await fetchSubscription();
+            dispatch(setIsActive(response?.isActive));
+            dispatch(setSubscriptionStatus(response?.subscriptionStatus))
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     useEffect(() => {
         fetchNotifications();
+        getSubscription();
         //long-pooling
         setInterval(() => {
             fetchNotifications();
@@ -59,7 +74,7 @@ export function AppSidebar() {
                 <SharedWorkspace />
                 <Seperation />
 
-                <Upgrade />
+                {!isActive && <Upgrade />}
                 <Seperation />
 
                 {/* <SidebarGroup />
