@@ -101,6 +101,12 @@ const main = async () => {
 
     //use ffmpeg to transcode
     console.log("start transcoding");
+
+    await prisma.tracks.update({
+        where: { id: trackId },
+        data: { status: "TRANSCODING" }
+    });
+
     const promises = resolutions.map(resolution => {
 
         const output = `video-${trackId}-${resolution.name}.mp4`;
@@ -151,6 +157,10 @@ const main = async () => {
                 })
                 .on("error", async (err) => {
                     console.log("FFMPEG error", err);
+                    await prisma.tracks.update({
+                        where: { id: trackId },
+                        data: { status: "FAILED" }
+                    })
                 })
                 .format("mp4")
                 .run()
@@ -162,6 +172,10 @@ const main = async () => {
 
     const audioOutput = `audio-${trackId}.mp3`;
     await Promise.all([extractAudio(orignalVideoPath, audioOutput, trackId)]);
+    await prisma.tracks.update({
+        where: { id: trackId },
+        data: { status: "COMPLETED" }
+    });
 };
 
 main()

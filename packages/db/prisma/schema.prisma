@@ -32,6 +32,7 @@ model Tracks {
   user       User      @relation(fields: [userId], references: [id])
   transcript String?
   title      String?
+  status     TrackStatus?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime? @updatedAt
 
@@ -78,4 +79,10 @@ model Subscription {
 enum Plan {
   FREE
   PRO
+}
+
+enum TrackStatus {
+  TRANSCODING
+  COMPLETED
+  FAILED
 }
