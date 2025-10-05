@@ -12,7 +12,8 @@
     "consumer:start": "cd apps/consumer && node dist/index.js",
     "transcoder:build": "cd apps/transcoder && tsc -b && cd ../../",
     "transcoder:start": "cd apps/transcoder && node dist/index.js",
-    "web:build": "cd apps/web && pnpm run build & cd ../../"
+    "web:build": "cd apps/web && pnpm run build & cd ../../",
+    "web:start": "cd apps/web && pnpm run start"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
