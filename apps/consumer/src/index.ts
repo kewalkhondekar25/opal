@@ -32,6 +32,8 @@ const spinCommand = new ListTasksCommand({
     family: process.env.ECS_TASK_DEFINATION?.split("/").pop()?.split(":")[0]
 });
 
+const desiredCount = parseInt(process.env.CONTAINER_DESIRED_COUNT!);
+
 const main = async () => {
 
 
@@ -67,7 +69,7 @@ const main = async () => {
                 for (const record of event.Records) {
 
                     const spinningContainers = await ecsClient.send(spinCommand);
-                    if (spinningContainers.taskArns && spinningContainers.taskArns.length >= 1) {
+                    if (spinningContainers.taskArns && spinningContainers.taskArns.length >= desiredCount) {
                         console.log("Max ECS tasks running. Leaving message in SQS for later.");
                         continue;
                     }

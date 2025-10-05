@@ -52,7 +52,7 @@ const extractAudio = (input: string, output: string, trackId: string) => {
                     });
 
                     if (transcript) {
-                        console.log("Transcrip generated");
+                        console.log("Transcript generated");
                     };
 
                     const title = await openai.responses.create({
@@ -69,6 +69,14 @@ const extractAudio = (input: string, output: string, trackId: string) => {
                             title: title.output_text 
                         }
                     });
+
+                    await prisma.notifications.create({
+                        data: {
+                           userId,
+                           title: "AI Generated Transcript",
+                           subTitle: "Transcript for your videos are ready" 
+                        }
+                    })
 
                     console.log("Transcript saved in db");
                 } catch (error) {
