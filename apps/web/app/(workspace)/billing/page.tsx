@@ -58,8 +58,6 @@ const page = () => {
             <ProBilling/>
           )
         }
-
-
       <PlanProgress />
     </section>
   )

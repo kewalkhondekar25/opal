@@ -8,6 +8,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Badge } from '../ui/badge';
+import { Spinner } from '../ui/spinner';
 
 const Transcript = ({ transcript }: { transcript: string }) => {
     return (
@@ -20,7 +22,11 @@ const Transcript = ({ transcript }: { transcript: string }) => {
                     <CardAction></CardAction>
                 </CardHeader>
                 <CardContent>
-                    <p className='text-sm'>{transcript}</p>
+                    {
+                        transcript ?
+                        <p className='text-sm'>{transcript}</p> :
+                        <Badge><Spinner/>Generating AI Transcript…</Badge>
+                    }
                 </CardContent>
             </Card>
         </section>

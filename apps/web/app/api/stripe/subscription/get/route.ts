@@ -33,6 +33,7 @@ const GET = async (req: NextRequest) => {
         }
 
         const subscriptionStatus = validUser?.subscription?.status;
+        const nextBillingDate = validUser?.subscription?.currentPeriodEnd;
         //return boolean if user has pro plan
         if (validUser.subscription?.status === "canceled" || validUser.subscription?.status === "past_due") {
             return NextResponse.json(new ApiResponse(
@@ -57,7 +58,11 @@ const GET = async (req: NextRequest) => {
             true,
             200,
             "Subscription fetched successfully",
-            { isActive: true, subscriptionStatus }
+            { 
+                isActive: true, 
+                subscriptionStatus,
+                nextBillingDate 
+            }
         ));
     } catch (error) {
         console.log(error);

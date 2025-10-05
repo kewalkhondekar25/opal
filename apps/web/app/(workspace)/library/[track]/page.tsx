@@ -20,16 +20,20 @@ const page = () => {
 
     const [url, setUrl] = useState([]);
     const [transcript, setTranscript] = useState("");
+    const [heading, setHeading] = useState("");
     const { track: trackId } = useParams() as { track: string }
     const { dispatch, setVideos, videos } = useRedux();
 
     const video = [1, 2, 3, 4];
     const videoToLoad = url?.[url.length - 1];
-
+    
+    
     useEffect(() => {
         const fetchVideos = async (trackId: string) => {
             try {
                 const videos = await getAllVideos(trackId);
+                const heading = videos?.title?.split("\n")[0].replace(/^- /, "");
+                setHeading(heading);
                 setUrl(videos.videoUrls);
                 dispatch(setVideos(videos));
                 setTranscript(videos.transcript)
@@ -50,7 +54,7 @@ const page = () => {
                     controls
                     src={videoToLoad}></video>
                 <p className='text-xs font-semibold self-start'>{getResolution(url.length - 1)}</p>
-                <p className='text-xl font-semibold self-start'>Unleashing the power of Speech to Recognition</p>
+                <p className='text-xl font-semibold self-start'>{heading}</p>
                 <div className='self-start'>
                     <p className='text-md'>Download Transcoded Videos</p>
                     <div className='flex'>

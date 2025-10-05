@@ -9,7 +9,7 @@ import useRedux from '@/hooks/use-redux';
 const ProBilling = () => {
 
     const [isClick, setIsClick] = useState(false);
-    const { subscriptionStatus } = useRedux();
+    const { subscriptionStatus, nextBillingDate } = useRedux();
 
     const handleManageClick = async () => {
         setIsClick(true);
@@ -40,6 +40,10 @@ const ProBilling = () => {
             <div className='[&>p:first-child]:text-xl [&>p:nth-child(2)]:text-sm'>
                 <p>Your Payment</p>
                 <p>$ 10/Month</p>
+            </div>
+            <div className='[&>p:first-child]:text-xl [&>p:nth-child(2)]:text-sm'>
+                <p>Next Billing Date</p>
+                <p>{nextBillingDate}</p>
             </div>
             <Button
                 className='cursor-pointer md:place-self-center md:w-sm'

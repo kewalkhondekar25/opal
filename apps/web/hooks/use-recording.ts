@@ -6,6 +6,8 @@ import axios from "axios";
 import { createTrack } from "@/service/trackService";
 import useToast from "./use-toast";
 import { createNotifications } from "@/service/notifications";
+import { fetchCredits } from "@/service/credit";
+import { useRouter } from "next/navigation";
 
 const useRecording = () => {
 
@@ -17,13 +19,17 @@ const useRecording = () => {
         setUrl, 
         isRecording, 
         recordingProcess,
-        recordingFinish
+        recordingFinish,
+        //plan
+        isActive,
+        subscriptionStatus
     } = useRedux();
 
     const [videoURL, setVideoURL] = useState<string | null>(null);
     //"recording-userId-trackId".webm
     // const fileName = `recording-${Date.now()}.webm`;
     let fileName: string;
+    const router = useRouter();
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
@@ -54,6 +60,28 @@ const useRecording = () => {
 
         try {
         dispatch(recordingProcess());
+        
+        const creditCount = await fetchCredits();
+        if(isActive && subscriptionStatus === "active"){
+            if(creditCount?.trackCount >= 10){
+                dispatch(recordingProcess());
+                dispatch(record());
+                useToast("You have used all your credits.");
+                router.push("/billing");
+                return 
+            }
+        };
+
+        if(!isActive){
+            if(creditCount?.trackCount >= 3){
+                dispatch(recordingProcess());
+                dispatch(record());
+                useToast("You have used all your credits. Please upgrade to pro plan");
+                router.push("/billing");
+                return; 
+            }
+        };
+        
         const { userId, trackId } = await createTrack();
 
         const uploadId = await startMultipartUploadSession(userId, trackId);

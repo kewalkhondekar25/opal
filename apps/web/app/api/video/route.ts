@@ -24,12 +24,14 @@ const GET = async (req: NextRequest) => {
             select: {
                 createdAt: true,
                 transcript: true,
+                title: true,
                 videos: true
             }
         });
 
         const timeStamp = trackData?.createdAt;
         const transcript = trackData?.transcript;
+        const title = trackData?.title;
 
         if (trackData?.videos?.length === 0) {
             return NextResponse.json(new ApiResponse(
@@ -57,6 +59,7 @@ const GET = async (req: NextRequest) => {
             {
                 timeStamp,
                 transcript,
+                title,
                 videoUrls
             }
         ), { status: 200 });

@@ -19,6 +19,7 @@ import Console from "./console";
 import { fetchAllNotifications } from "@/service/notifications";
 import useRedux from "@/hooks/use-redux";
 import { fetchSubscription } from "@/service/subscription";
+import { fetchCredits } from "@/service/credit";
 
 export function AppSidebar() {
 
@@ -28,7 +29,9 @@ export function AppSidebar() {
         setIsNotificationLoading,
         isActive,
         setIsActive,
-        setSubscriptionStatus
+        setSubscriptionStatus,
+        setCreditTrackCount,
+        setNextBillingDate
     } = useRedux();
 
     const fetchNotifications = async () => {
@@ -46,7 +49,18 @@ export function AppSidebar() {
         try {
             const response = await fetchSubscription();
             dispatch(setIsActive(response?.isActive));
-            dispatch(setSubscriptionStatus(response?.subscriptionStatus))
+            dispatch(setSubscriptionStatus(response?.subscriptionStatus));
+            const nextBillingDate = response?.nextBillingDate?.split("T")[0];
+            dispatch(setNextBillingDate(nextBillingDate));
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getCreditCount = async () => {
+        try {
+            const response = await fetchCredits();
+            dispatch(setCreditTrackCount(response?.trackCount));
         } catch (error) {
             console.log(error);
         }
@@ -55,6 +69,7 @@ export function AppSidebar() {
     useEffect(() => {
         fetchNotifications();
         getSubscription();
+        getCreditCount();
         //long-pooling
         setInterval(() => {
             fetchNotifications();

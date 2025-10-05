@@ -19,6 +19,13 @@ const GET = async (req: NextRequest) => {
             where: { email },
             select: { id: true }
         });
+        if (!userId) {
+            return NextResponse.json(new ApiResponse(
+                false,
+                401,
+                "Unauthorized user"
+            ), { status: 401 });
+        }
 
         const notifications = await prisma.notifications.findMany({
             where: { userId: userId?.id },

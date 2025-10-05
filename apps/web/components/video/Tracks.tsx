@@ -17,6 +17,8 @@ import Link from 'next/link';
 import convertTime, { convertDate } from '@/lib/time';
 import { Skeleton } from '../ui/skeleton';
 import { getAllVideos } from '@/service/videoService';
+import { Badge } from '../ui/badge';
+import { Spinner } from '../ui/spinner';
 
 interface ITrack {
     id: string,
@@ -25,7 +27,7 @@ interface ITrack {
     createdAt: string
 }
 
-const Tracks = () => {
+const Tracks = ({ isTranscoding }: { isTranscoding: Boolean }) => {
 
     const { tracks, isLoading, title }: {
         tracks: ITrack[],
@@ -63,10 +65,11 @@ const Tracks = () => {
                 <span>Videos</span>
             </div>
             {
-                transcodingNumber &&
-                <div className='absolute top-0 right-0 flex place-items-center text-xs  gap-1 my-1 p-1'>
-                    <Loader className='size-4 animate-spin' />
-                    <p className='font-semibold'>{transcodingNumber?.length} Transcoding</p>
+                isTranscoding && <div className='absolute top-0 right-0 flex place-items-center text-xs  gap-1 my-1 p-1'>
+                    <Badge>
+                        <Spinner />
+                        Transcoding
+                    </Badge>
                 </div>
             }
             <div
@@ -75,7 +78,7 @@ const Tracks = () => {
                 xl:grid-cols-3'>
                 {
                     tracks?.map((item, i) => {
-                        
+
                         const { date, month } = convertDate(item?.createdAt);
                         const lastVideo = item.videos.length - 1;
 

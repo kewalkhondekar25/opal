@@ -26,7 +26,9 @@ import {
 
 import { 
     setIsActive,
-    setSubscriptionStatus
+    setSubscriptionStatus,
+    setCreditTrackCount,
+    setNextBillingDate
 } from "@/store/slices/subscribeSlice";
 
 const useRedux = () => {
@@ -44,7 +46,7 @@ const useRedux = () => {
 
     const { notifications, isNotificationLoading } = useSelector((state: RootState) => state.notifications);
 
-    const { isActive, subscriptionStatus } = useSelector((state: RootState) => state.subscribe);
+    const { isActive, subscriptionStatus, trackCount, nextBillingDate } = useSelector((state: RootState) => state.subscribe);
     
     const dispatch = useDispatch<AppDispatch>();
 
@@ -66,6 +68,8 @@ const useRedux = () => {
         //subscribe
         isActive,
         subscriptionStatus,
+        trackCount,//track
+        nextBillingDate,
         dispatch,
         //media
         upload,
@@ -86,7 +90,9 @@ const useRedux = () => {
         setIsNotificationLoading,
         //subscribe
         setIsActive,
-        setSubscriptionStatus
+        setSubscriptionStatus,
+        setCreditTrackCount,//track
+        setNextBillingDate
     };
 };
 

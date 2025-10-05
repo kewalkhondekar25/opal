@@ -26,6 +26,7 @@ const page = () => {
   } = useRedux();
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [isTranscoding, setIsTranscoding] = useState(false);
   const limit = 6;
 
   useEffect(() => {
@@ -37,6 +38,11 @@ const page = () => {
         dispatch(setIsLoading());
         setPage(allTracks?.data?.page);
         setTotalPages(allTracks?.data?.totalPages);
+        //@ts-ignore
+        const isTranscoding = allTracks.data.tracks?.filter(item => item.status === "TRANSCODING").length >= 1;
+        if(isTranscoding){
+          setIsTranscoding(true);
+        };
       } catch (error) {
         console.log(error);
       }
@@ -54,7 +60,7 @@ const page = () => {
         <MediaConsole />
       </div>
       {
-        tracks?.length < 0 ? <Guide /> : isLoading ? <LoadingTrack /> : <Tracks />
+        tracks?.length <= 0 ? <Guide /> : isLoading ? <LoadingTrack /> : <Tracks isTranscoding={isTranscoding} />
       }
 
       {
@@ -72,9 +78,10 @@ const page = () => {
       }
 
       {
-        isLoading ? "" :
+        tracks?.length >= 1 &&
         <div className='flex justify-center items-center gap-1 my-3 *:cursor-pointer'>
           <Button
+            className='size-6'
             onClick={() => setPage(prev => prev - 1)}
             disabled={page <= 1}
           >
@@ -85,6 +92,7 @@ const page = () => {
             <span> of</span> {totalPages}
           </div>
           <Button
+            className='size-6'
             disabled={page >= totalPages}
             onClick={() => setPage(prev => prev + 1)}>
             <ChevronRight />

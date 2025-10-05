@@ -2,12 +2,16 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface Istate {
     isActive: boolean,
-    subscriptionStatus: string
+    subscriptionStatus: string;
+    trackCount: number;//credit-track
+    nextBillingDate: string
 };
 
 const initialState: Istate = {
     isActive: false,
-    subscriptionStatus: ""
+    subscriptionStatus: "",
+    trackCount: 0,
+    nextBillingDate: ""
 };
 
 const subscribeSlice = createSlice({
@@ -19,12 +23,20 @@ const subscribeSlice = createSlice({
         },
         setSubscriptionStatus: (state, action) => {
             state.subscriptionStatus = action.payload;
+        },
+        setCreditTrackCount: (state, action) => {
+            state.trackCount = action.payload;
+        },
+        setNextBillingDate: (state, action) => {
+            state.nextBillingDate = action.payload;
         }
     }
 });
 
 export const {
     setIsActive,
-    setSubscriptionStatus
+    setSubscriptionStatus,
+    setCreditTrackCount,
+    setNextBillingDate
 } = subscribeSlice.actions;
 export default subscribeSlice.reducer;

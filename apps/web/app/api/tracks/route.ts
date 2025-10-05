@@ -44,7 +44,9 @@ const GET = async (req: NextRequest) => {
                 orderBy: { createdAt: "desc" }
             });
 
-            const total = await prisma.tracks.count();
+            const total = await prisma.tracks.count({
+                where: { userId: userId?.id }
+            });
 
             // return { tracks, total };
         // });
