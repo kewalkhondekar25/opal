@@ -3,16 +3,24 @@
 import PlanCard from '@/components/billing/card';
 import ProBilling from '@/components/billing/ProBilling';
 import PlanProgress from '@/components/billing/Progress';
-import { Button } from '@/components/ui/button';
 import { cardNum } from '@/constants/plan-cards';
 import useRedux from '@/hooks/use-redux';
 import useToast from '@/hooks/use-toast';
 import { getSession } from '@/service/payment';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
+export const dynamic = "force-dynamic";
 
-const page = () => {
+export default function page() {
+  return (
+    <Suspense fallback={<div>Loading billing...</div>}>
+      <BillingContent />
+    </Suspense>
+  );
+}
+
+const BillingContent = () => {
 
   const router = useRouter();
   const params = useSearchParams();
@@ -61,6 +69,4 @@ const page = () => {
       <PlanProgress />
     </section>
   )
-}
-
-export default page
+};
