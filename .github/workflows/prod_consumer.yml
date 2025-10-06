@@ -1,0 +1,59 @@
+name: Opal consumer queue deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/consumer/**"
+      - "packages/**"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Login to dockerhub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build docker image and push to dockerhub
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./docker/Dockerfile.consumer
+          push: true
+          tags: kewalkhondekardev/opal-consumer:${{ github.sha }}
+      
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            sudo docker pull kewalkhondekardev/opal-consumer:${{ github.sha }}
+
+            sudo docker stop opal-consumer || true
+            sudo docker rm opal-consumer || true
+
+            sudo docker run -d \
+            --name opal-consumer \
+            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            -e REGION=${{ secrets.REGION }} \
+            -e ACCESS_KEY=${{ secrets.ACCESS_KEY }} \
+            -e SECRET_ACCESS_KEY=${{ secrets.SECRET_ACCESS_KEY }} \
+            -e BUCKET=${{ secrets.BUCKET }} \
+            -e FINAL_BUCKET=${{ secrets.FINAL_BUCKET }} \
+            -e QUEUE_URL=${{ secrets.QUEUE_URL }} \
+            -e ECS_TASK_DEFINATION=${{ secrets.ECS_TASK_DEFINATION }} \
+            -e ECS_CLUSTER=${{ secrets.ECS_CLUSTER }} \
+            -e ECS_SUBNETS=${{ secrets.ECS_SUBNETS }} \
+            -e ECS_SECURITY_GROUP=${{ secrets.ECS_SECURITY_GROUP }} \
+            -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+            -e CONTAINER_DESIRED_COUNT=${{ secrets.CONTAINER_DESIRED_COUNT }} \
+            kewalkhondekardev/opal-consumer:${{ github.sha }}
