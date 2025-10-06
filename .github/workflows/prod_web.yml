@@ -22,7 +22,7 @@ jobs:
         run: |
           docker build \
             --build-arg DATABASE_URL=${{secrets.DATABASE_URL }} \
-            --build-arg NEXT_PUBLIC_APP_URL={{ secrets.NEXT_PUBLIC_APP_URL }} \
+            --build-arg NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }} \
             --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }} \
             --build-arg CLERK_SECRET_KEY=${{secrets.CLERK_SECRET_KEY }} \
             --build-arg CLERK_WEBHOOK_SECRET=${{secrets.CLERK_WEBHOOK_SECRET }} \
