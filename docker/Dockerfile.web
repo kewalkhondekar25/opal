@@ -1,4 +1,4 @@
-FROM node:22.19.0-alpine3.22
+FROM node:22.19.0-alpine3.22 AS builder
 
 WORKDIR /app
 
@@ -7,15 +7,44 @@ COPY ./pnpm-lock.yaml ./pnpm-lock.yaml
 COPY ./pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY ./turbo.json ./turbo.json
 
+COPY ./packages ./packages
+COPY ./apps/web ./apps/web
+
 RUN npm i -g pnpm
 RUN pnpm i --frozen-lockfile
 
-COPY ./packages ./packages
-COPY ./apps/web ./apps/web
+ARG DATABASE_URL
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ARG CLERK_SECRET_KEY
+ARG CLERK_WEBHOOK_SECRET
+ARG NEXT_PUBLIC_APP_URL
+ARG STRIPE_SECRET_KEY
+ARG STRIPE_PRICE_ID
+ARG STRIPE_CONFIGURATION_ID
+ARG STRIPE_WEBHOOK_SECRET
+
+ENV DATABASE_URL=$DATABASE_URL \
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY \
+    CLERK_SECRET_KEY=$CLERK_SECRET_KEY \
+    CLERK_WEBHOOK_SECRET=$CLERK_WEBHOOK_SECRET \
+    NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
+    STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY \
+    STRIPE_PRICE_ID=$STRIPE_PRICE_ID \
+    STRIPE_CONFIGURATION_ID=$STRIPE_CONFIGURATION_ID \
+    STRIPE_WEBHOOK_SECRET=$STRIPE_WEBHOOK_SECRET
 
 RUN pnpm db:generate
 RUN pnpm web:build
 
+FROM node:22.19.0-alpine3.22 AS runner
+
+WORKDIR /app
+
+COPY --from=builder /app/apps/web/.next ./.next
+COPY --from=builder /app/apps/web/public ./public
+COPY --from=builder /app/apps/web/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+
 EXPOSE 3000
 
-CMD [ "pnpm", "run", "web:start" ]
+CMD [ "pnpm", "run", "start" ]
