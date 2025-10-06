@@ -7,11 +7,12 @@ COPY ./pnpm-lock.yaml ./pnpm-lock.yaml
 COPY ./pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY ./turbo.json ./turbo.json
 
+RUN npm i -g pnpm
+RUN pnpm i --frozen-lockfile
+
 COPY ./packages ./packages
 COPY ./apps/web ./apps/web
 
-RUN npm i -g pnpm
-RUN pnpm i --frozen-lockfile
 RUN pnpm db:generate
 RUN pnpm web:build
 
