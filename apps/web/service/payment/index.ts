@@ -2,7 +2,7 @@ import axios from "axios";
 
 const checkout = async () => {
     try {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/checkout`, {
+        const response = await axios.post(`/api/stripe/checkout`, {
             headers: { "Content-Type": "application/json"}
         });
         console.log("checkout response", response);
@@ -14,7 +14,7 @@ const checkout = async () => {
 
 const getSession = async (session_id: string) => {
     try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/session-fetch?session_id=${session_id}`);
+        const response = await axios.get(`/api/stripe/session-fetch?session_id=${session_id}`);
         console.log(response);
         return response.data.data;
     } catch (error) {
@@ -25,7 +25,7 @@ const getSession = async (session_id: string) => {
 
 const manageBilling = async () => {
     try {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/manage-billing`);
+        const response = await axios.post(`/api/stripe/manage-billing`);
         console.log(response);
         return response?.data?.data;
     } catch (error) {

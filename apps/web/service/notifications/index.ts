@@ -2,7 +2,7 @@ import axios from "axios"
 
 const fetchAllNotifications = async () => {
     try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`);
+        const response = await axios.get(`/api/notifications`);
         return response.data.data;
     } catch (error) {
         console.log(error);
@@ -11,7 +11,7 @@ const fetchAllNotifications = async () => {
 
 const updateNotifications = async (notificationId: string) => {
     try {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, { notificationId });
+        const response = await axios.post(`/api/notifications`, { notificationId });
         console.log(response);
         return response.data.data;
     } catch (error) {
@@ -21,7 +21,7 @@ const updateNotifications = async (notificationId: string) => {
 
 const createNotifications = async (title: string, subTitle: string) => {
     try {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/create`, {
+        const response = await axios.post(`/api/notifications/create`, {
             title,
             subTitle
         });
