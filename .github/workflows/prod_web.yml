@@ -19,12 +19,22 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       
       - name: Build docker image and push to dockerhub
-        uses: docker/build-push-action@v4
-        with: 
-          context: .
-          file: ./docker/Dockerfile.web
-          push: true
-          tags: kewalkhondekardev/opal-web:${{ github.sha }}
+        run: |
+          docker build \
+            --build-arg DATABASE_URL=${{secrets.DATABASE_URL }} \
+            --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }} \
+            --build-arg CLERK_SECRET_KEY=${{secrets.CLERK_SECRET_KEY }} \
+            --build-arg CLERK_WEBHOOK_SECRET=${{secrets.CLERK_WEBHOOK_SECRET }} \
+            --build-arg STRIPE_SECRET_KEY=${{secrets.STRIPE_SECRET_KEY }} \
+            --build-arg STRIPE_PRICE_ID=${{secrets.STRIPE_PRICE_ID }} \
+            --build-arg STRIPE_CONFIGURATION_ID=${{secrets.STRIPE_CONFIGURATION_ID }} \
+            --build-arg STRIPE_WEBHOOK_SECRET=${{secrets.STRIPE_WEBHOOK_SECRET }} \
+            -t kewalkhondekardev/opal-web:${{ github.sha }} \
+            -f ./docker/Dockerfile.web .
+      
+      - name: Push docker image to dockerhub
+        run: |
+          docker push kewalkhondekardev/opal-web:${{ github.sha }}
       
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@v1
