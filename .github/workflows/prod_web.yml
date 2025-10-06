@@ -55,4 +55,4 @@ jobs:
             -e STRIPE_PRICE_ID=${{ secrets.STRIPE_PRICE_ID }} \
             -e STRIPE_CONFIGURATION_ID=${{ secrets.STRIPE_CONFIGURATION_ID }} \
             -e STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }} \
-            kewalkhondekardev/opal-web:{{ github.sha }}
+            kewalkhondekardev/opal-web:${{ github.sha }}
