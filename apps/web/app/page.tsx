@@ -1,17 +1,22 @@
-import { ModeToggle } from "@/components/common/ModeToggle";
-import { Button } from "@/components/ui/button";
+import { FeaturesSection } from "@/components/landing-page/FeaturesSection";
+import { FooterBanner } from "@/components/landing-page/FooterBanner";
+import FooterComponent from "@/components/landing-page/FooterComponent";
+import Hero from "@/components/landing-page/Hero";
+import Navbar from "@/components/landing-page/Navbar";
+import PriceCard from "@/components/landing-page/PriceCard";
+import { Pricing } from "@/components/landing-page/Pricing";
 
 export default function Home() {
   return (
-    <div
-      className="relative flex min-h-screen justify-center items-center
-      text-7xl font-bold ">
-      <div>
-        Opal
-      </div>
-      <div className="absolute top-0 right-5">
-        <ModeToggle />
-      </div>
-    </div>
+    <>
+      <Navbar />
+      <main>
+        <Hero/>
+        <FeaturesSection/>
+        <Pricing/>
+        <PriceCard/>
+        <FooterBanner/>
+      </main>
+    </>
   );
 }

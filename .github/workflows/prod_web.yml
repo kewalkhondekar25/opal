@@ -21,7 +21,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       
-      - name: Build docker image and push to dockerhub
+      - name: Build docker image
         run: |
           docker build \
             --build-arg DATABASE_URL=${{secrets.DATABASE_URL }} \
@@ -48,10 +48,11 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             sudo docker pull kewalkhondekardev/opal-web:${{ github.sha }}
-
+            echo "🛑 Stopping and removing old container (if exists)..."
             sudo docker stop opal-web || true
             sudo docker rm opal-web || true
-
+            echo "🧹 Removing old OPAL image..."
+            sudo docker images "kewalkhondekardev/opal-web" -q | grep -v "${{ github.sha }}" | xargs -r sudo docker rmi -f
             sudo docker run -d \
             --name opal-web \
             -p 3000:3000 \
