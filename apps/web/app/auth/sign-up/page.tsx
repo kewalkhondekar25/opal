@@ -17,6 +17,7 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 
 
 const SignUp = () => {
@@ -26,23 +27,50 @@ const SignUp = () => {
         password: ""
     });
     const [error, setError] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
     const router = useRouter();
     const { signUp, setActive } = useSignUp();
 
+    const validateForm = () => {
+        let valid = true;
+        setEmailError("");
+        setPasswordError("");
+
+        // Email validation regex
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!user.email || !emailRegex.test(user.email)) {
+            setEmailError("Please enter a valid email address");
+            valid = false;
+            setIsSubmitted(false);
+        }
+
+        if (!user.password) {
+            setPasswordError("Password cannot be empty");
+            valid = false;
+            setIsSubmitted(false);
+        }
+        return valid;
+    };
+
     const handleSubmit = async (e: FormEvent) => {
 
         e.preventDefault();
-        
+        setIsSubmitted(true);
+        if (!validateForm()) return;
+
         try {
             const res = await signUp?.create({ emailAddress: user.email, password: user.password });
-            if(res?.status === "complete"){
+            if (res?.status === "complete") {
                 await setActive!({ session: res?.createdSessionId })
                 router.push("/library")
             }
         } catch (error: any) {
             console.log(error);
-            if(error.errors?.[0]?.code === "form_identifier_exists"){
+            if (error.errors?.[0]?.code === "form_identifier_exists") {
+                setIsSubmitted(false);
                 setError("An account with this email already exists. Try logging in.")
             }
         }
@@ -59,11 +87,11 @@ const SignUp = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button variant="outline" className="w-full cursor-pointer">
+                        {/* <Button variant="outline" className="w-full cursor-pointer">
                             <svg role="img" viewBox="0 0 24 24"><path fill="currentColor" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"></path></svg>
                             Sign Up with Google
                         </Button>
-                        <Separator className="my-5" />
+                        <Separator className="my-5" /> */}
                         <div className="flex flex-col gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
@@ -71,9 +99,11 @@ const SignUp = () => {
                                     id="email"
                                     type="email"
                                     placeholder="m@example.com"
-                                    required
                                     onChange={(e) => setUser(prev => ({ ...prev, email: e.target.value }))}
                                 />
+                                {emailError && (
+                                    <p className="text-xs text-red-500">{emailError}</p>
+                                )}
                                 {
                                     error && <p className="text-xs text-red-500">An account with this email already exists. Try logging in.</p>
                                 }
@@ -85,14 +115,19 @@ const SignUp = () => {
                                 <Input
                                     id="password"
                                     type="password"
-                                    required
                                     onChange={(e) => setUser(prev => ({ ...prev, password: e.target.value }))} />
                             </div>
+                            {passwordError && (
+                                <p className="text-xs text-red-500">{passwordError}</p>
+                            )}
                         </div>
                     </CardContent>
                     <CardFooter className="flex-col gap-2">
-                        <Button type="submit" className="w-full cursor-pointer">
-                            Sign Up
+                        <Button
+                            type="submit"
+                            className="w-full cursor-pointer"
+                            disabled={isSubmitted}>
+                            Sign Up {isSubmitted && <Spinner />}
                         </Button>
                         <p className="text-sm">Already have an account? <Link
                             href="sign-in" className="underline">Sign In</Link></p>
