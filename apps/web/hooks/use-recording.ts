@@ -183,7 +183,7 @@ const useRecording = () => {
                 }
             };
 
-            mediaRecorder.start(30000);
+            mediaRecorder.start(60000);
             dispatch(recording());
 
         } catch (error) {
