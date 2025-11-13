@@ -1,135 +1,176 @@
-# Turborepo starter
+<p align="center">
+  <a href="https://github.com/calcom/cal.com">
+   <img src="https://github.com/user-attachments/assets/6e0b84f5-5f2b-414a-9fde-8c64c4a6e72d" alt="Logo">
+  </a>
 
-This Turborepo starter is maintained by the Turborepo core team.
+  <h3 align="center">opal</h3>
 
-## Using this example
+  <p align="center">
+    A Distributed Video Transcoding Application
+    <br />
+    <a href="https://opal.kewalkhondekar.dev">Website</a>
+    ·
+    <a href="https://scalloped-anise-dc9.notion.site/Opal-28b52ef0c8b6803e832acb8160fa5895">Document</a>
+  </p>
+</p>
+<br/>
 
-Run the following command:
+# Opal – Distributed Video Transcoding Platform
+Opal is a fully event-driven, distributed video processing system that enables seamless browser-based screen recording, multipart uploads, multi-resolution FFmpeg transcoding, AI-powered transcripts, and automated video delivery pipelines.
+
+## Monorepo Structure (Turborepo)
+ ```sh
+     apps/
+     ├── web/          # Next.js app (UI recording client + Restfull API)
+     ├── consumer/     # SQS queue consumer (launches transcoding tasks)
+     └── transcoder/   # FFmpeg worker running inside ECS container
+
+     docker/
+     ├── Dockerfile.web
+     ├── Dockerfile.consumer
+     └── Dockerfile.transcoder
+
+     packages/
+     ├── ui/           # Shared UI components (optional)
+     ├── config/       # Shared config/env helpers
+     └── db/           # Shared database
+   ```
+
+## Prerequisites
+You need:
+
+- Node.js 18+
+- pnpm (recommended)
+- Docker (no docker-compose)
+- AWS CLI configured
+- FFmpeg (optional for local transcoder testing)
+- PostgreSQL database
+
+## 📥 Clone the Repository
+
+```bash
+git clone https://github.com/kewalkhondekar25/opal
+cd opal
+```
+  
+## Environment Variables
+
+Each app has its own .env file:
+
+apps/web/.env
+```sh
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+CLERK_WEBHOOK_SECRET=
+ACCESS_KEY=
+SECRET_ACCESS_KEY=
+BUCKET=
+FINAL_BUCKET=
+REGION=
+DOMAIN=
+NEXT_PUBLIC_API_URL=
+NEXT_PUBLIC_APP_URL=
+STRIPE_SECRET_KEY=
+STRIPE_PRICE_ID=
+STRIPE_CONFIGURATION_ID=
+STRIPE_WEBHOOK_SECRET=
+```
+
+apps/consumer/.env
+```sh
+REGION=
+ACCESS_KEY=
+SECRET_ACCESS_KEY=
+BUCKET=
+FINAL_BUCKET=
+QUEUE_URL=
+DATABASE_URL=
+ECS_TASK_DEFINATION=
+ECS_CLUSTER=
+ECS_SUBNETS=
+ECS_SECURITY_GROUP=
+OPENAI_API_KEY=
+CONTAINER_DESIRED_COUNT=
+```
+packages/db/.env
+```sh
+DATABASE_URL=
+```
+
+## Install Dependencies
+```sh
+pnpm install
+```
+
+## Running Locally (Without Docker)
+
+Web App (Next.js)
 
 ```sh
-npx create-turbo@latest
+cd apps/web
+pnpm run dev
 ```
 
-## What's inside?
+Consumer
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```sh
+cd apps/consumer
+pnpm run dev
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+Transcoder
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```sh
+cd apps/transcoder
+pnpm run dev
 ```
 
-### Develop
+## Running With Docker
 
-To develop all apps and packages, run the following command:
+1. Build Images
+   
+  Web (Nextjs)
+  ```sh
+    docker build -f ./docker/Dockerfile.web -t opal-web .
+  ```
+  Consumer
+   ```sh
+    docker build -f ./docker/Dockerfile.consumer -t opal-consumer .
+   ```
+  
+  Transcoder
+  ```sh
+    docker build -f ./docker/Dockerfile.transcoder -t opal-transcoder .
+  ```
+2. Run Containers
 
-```
-cd my-turborepo
+  Web (Next.js)
+  ```sh
+    docker run -d -p 3000:3000 --env-file apps/web/.env opal-web
+  ```
+  Consumer
+  ```sh
+    docker run -d -p 3000:3000 --env-file apps/consumer/.env opal-consumer
+  ```
+  Transcoder
+  ```sh
+    docker run -d -e-nv-file apps/consumer/.env opal-consumer
+  ```
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+## Useful Turborepo Commands
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+Run everything:
+```sh
+pnpm run dev
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+Build:
+```sh
+pnpm run build
 ```
 
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+Clean:
+```sh
+pnpm run clean
+```
